@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Sobre de Amor 💌</title>
+
+<!-- Fuente elegante -->
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display&display=swap" rel="stylesheet">
+
+<!-- Leaflet (mapa) -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+<style>
+body {
+  margin: 0;
+  background: linear-gradient(#ffd6e8, #ffeef6);
+  font-family: 'Playfair Display', serif;
+  overflow-x: hidden;
+}
+
+/* Corazones cayendo */
+.heart {
+  position: fixed;
+  top: -10px;
+  color: rgba(255,105,180,0.6);
+  animation: fall linear infinite;
+}
+@keyframes fall {
+  to { transform: translateY(110vh); }
+}
+
+/* Sobre */
+#envelope {
+  width: 80%;
+  max-width: 800px;
+  margin: 50px auto;
+  background: #fff;
+  border-radius: 15px;
+  padding: 30px;
+  box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+  position: relative;
+}
+
+/* Sello de cera */
+.seal {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  position: absolute;
+  top: -30px;
+  right: 40px;
+  cursor: pointer;
+}
+.red { background: #b11226; }
+.gold { background: #c9a227; }
+.pink { background: #e75480; }
+
+/* Texto elegante */
+#message {
+  font-family: 'Great Vibes', cursive;
+  font-size: 32px;
+  white-space: pre-wrap;
+  min-height: 120px;
+}
+
+/* Escritura animada */
+.typing {
+  border-right: 2px solid pink;
+  animation: blink 1s infinite;
+}
+@keyframes blink {
+  50% { border-color: transparent; }
+}
+
+/* Galería */
+.gallery {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 15px;
+  border: 10px solid;
+  border-image: url('https://i.imgur.com/6QJYFZC.png') 30 round;
+}
+.gallery img {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+/* Controles */
+section {
+  margin-top: 30px;
+}
+button, input {
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  margin: 5px;
+}
+
+/* Mapa */
+#map {
+  height: 300px;
+  border-radius: 15px;
+}
+</style>
+</head>
+
+<body>
+
+<!-- Música -->
+<audio id="music" loop>
+  <source src="https://cdn.pixabay.com/audio/2022/03/15/audio_7b7c63c98e.mp3" type="audio/mpeg">
+</audio>
+
+<div id="envelope">
+  <!-- Sellos -->
+  <div class="seal red" onclick="selectSeal('red')"></div>
+  <div class="seal gold" style="right:110px" onclick="selectSeal('gold')"></div>
+  <div class="seal pink" style="right:180px" onclick="selectSeal('pink')"></div>
+
+  <h2>💌 Tu carta de amor</h2>
+  <textarea id="inputText" placeholder="Escribe tu mensaje..." rows="4" style="width:100%"></textarea>
+  <button onclick="openLetter()">Abrir sobre</button>
+
+  <div id="message"></div>
+
+  <!-- Música -->
+  <section>
+    🎻 <button onclick="toggleMusic()">Música de violín</button>
+  </section>
+
+  <!-- Poema secreto -->
+  <section>
+    <button onclick="generatePoem()">🌹 Generar poema secreto</button>
+  </section>
+
+  <!-- Cuenta regresiva -->
+  <section>
+    ⏳ Cuenta regresiva:
+    <input type="date" id="specialDate">
+    <div id="countdown"></div>
+  </section>
+
+  <!-- Galería -->
+  <section>
+    📷 Galería de recuerdos
+    <input type="file" multiple accept="image/*" onchange="loadImages(event)">
+    <div class="gallery" id="gallery"></div>
+  </section>
+
+  <!-- Mapa -->
+  <section>
+    🗺️ Mapa de recuerdos
+    <div id="map"></div>
+  </section>
+</div>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script>
+/* Corazones */
+setInterval(() => {
+  const h = document.createElement("div");
+  h.className = "heart";
+  h.innerHTML = "❤";
+  h.style.left = Math.random()*100 + "vw";
+  h.style.animationDuration = 3 + Math.random()*3 + "s";
+  document.body.appendChild(h);
+  setTimeout(()=>h.remove(),6000);
+},300);
+
+/* Escritura animada */
+function openLetter() {
+  const text = document.getElementById("inputText").value;
+  const target = document.getElementById("message");
+  target.innerHTML = "";
+  let i = 0;
+  const interval = setInterval(()=>{
+    target.innerHTML += text.charAt(i);
+    i++;
+    if(i >= text.length) clearInterval(interval);
+  },80);
+}
+
+/* Música */
+function toggleMusic() {
+  const music = document.getElementById("music");
+  music.paused ? music.play() : music.pause();
+}
+
+/* Poema */
+function generatePoem() {
+  const poems = [
+    "Eres mi ayer bonito, mi hoy eterno y mi mañana soñado.",
+    "En cada latido tu nombre florece como primavera.",
+    "Si el amor tuviera forma, llevaría tu sonrisa."
+  ];
+  alert(poems[Math.floor(Math.random()*poems.length)]);
+}
+
+/* Galería */
+function loadImages(e) {
+  const gallery = document.getElementById("gallery");
+  [...e.target.files].forEach(file=>{
+    const img = document.createElement("img");
+    img.src = URL.createObjectURL(file);
+    gallery.appendChild(img);
+  });
+}
+
+/* Cuenta regresiva */
+setInterval(()=>{
+  const date = new Date(document.getElementById("specialDate").value);
+  if(!date) return;
+  const diff = date - new Date();
+  document.getElementById("countdown").innerText =
+    Math.floor(diff/86400000) + " días restantes";
+},1000);
+
+/* Mapa */
+const map = L.map('map').setView([0,0],2);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+map.on('click', e=>{
+  L.marker(e.latlng).addTo(map)
+   .bindPopup("💖 Recuerdo especial").openPopup();
+});
+
+/* Sellos */
+function selectSeal(color) {
+  document.querySelectorAll('.seal').forEach(s=>s.style.opacity=0.3);
+  document.querySelector('.'+color).style.opacity=1;
+}
